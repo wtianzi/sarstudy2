@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from . import views
 from app3.views import IndexView,TaskGenerationView,TaskGenerationView3D,TaskGenerationFormView,TaskassignmentExperimentView,TaskassignmentFullView,TaskIndexView,QuestionnaireFormView,ConsentFormView,SurveyPostEFormView,DemogrphicsView, WebapplicationFormView
 from app3.views import ConsentFormView3D,DemogrphicsView3D,SurveyPostEFormView3D,QuestionnaireFormView3D,TaskassignmentExperimentView3D,PostTrainingFormView3D,ConsentFormView3D_ISE3614
-from app3.views import DownloadDataView
+from app3.views import DownloadDataView, TaskGenerationView3DDemo
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -13,9 +13,12 @@ router.register(r'waypointsdata', views.WaypointsDataViewSet,basename="waypoints
 router.register(r'gpshistoricaldata', views.GPShistoricalDataViewSet,basename="gpshistoricaldata")
 
 urlpatterns = [
-    path('', TaskGenerationView.as_view(),name='sarwebinit'),
-
+    #path('', TaskGenerationView.as_view(),name='sarwebinit'),
+    path('',TemplateView.as_view(template_name="demo.html")),
+    path('sarwebinit', TaskGenerationView.as_view(),name='sarwebinit'),
+    
     path('sarweb3D', TaskGenerationView3D.as_view(),name='sarweb3D'),
+    path('sarweb3DDemo', TaskGenerationView3DDemo.as_view(),name='sarweb3DDemo'),
 
     re_path(r'^experiment/task/$', TaskassignmentExperimentView.as_view(),name='experiment'),
     re_path(r'^experiment/task/(?P<participantid>\w+)/$',TaskassignmentExperimentView.as_view(),name="experiment"),

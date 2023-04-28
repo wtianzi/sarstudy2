@@ -290,11 +290,11 @@ var g_experiment={
     {'index':100,'taskorder':[0,397,398,399,400]}
   ],
   "experimentsetup":[
-    {'index':0,'lpt':2,'loc':0,'vt':0},
+    {'index':0,'lpt':2,'loc':0,'vt':3},
 
-    {'index': 1, 'lpt': 2, 'loc': 1, 'vt': 0} ,
+    {'index': 1, 'lpt': 2, 'loc': 1, 'vt': 2} ,
     {'index': 2, 'lpt': 2, 'loc': 2, 'vt': 1} ,
-    {'index': 3, 'lpt': 2, 'loc': 4, 'vt': 2} ,
+    {'index': 3, 'lpt': 2, 'loc': 4, 'vt': 0} ,
     {'index': 4, 'lpt': 2, 'loc': 3, 'vt': 3} ,
 
     {'index': 5, 'lpt': 2, 'loc': 2, 'vt': 0} ,

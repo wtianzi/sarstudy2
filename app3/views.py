@@ -185,7 +185,7 @@ class TaskGenerationView(TemplateView):
         # nothing went well
         return HttpResponse('Getwatershed failed!')
 
-
+    
 class TaskassignmentExperimentView(TaskGenerationView):
     template_name='app3/Taskgeneration_exp_v5.html'
 
@@ -1019,3 +1019,7 @@ class PostTrainingFormView3D(TemplateView):
    <script type="text/javascript">
       opener.dismissAddAnotherPopup(window);
    </script>''')
+
+    
+class TaskGenerationView3DDemo(TaskGenerationView3D):
+    template_name='app3/Taskgeneration3D_demo.html'

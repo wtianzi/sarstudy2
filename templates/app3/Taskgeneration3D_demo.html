@@ -19,7 +19,31 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/taskgeneration3D.css' %}"/>
   <script type="text/javascript" src="{% static 'data/scenario_3d.js' %}"></script>
   <script type="text/javascript" src="{% static 'esritoken.js' %}"></script>
-
+<style>
+    .editArea-container {
+  background: #fff;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5em;
+  overflow: auto;
+  padding: 12px 15px;
+  width: 300px;
+}
+  #editArea {
+      padding: 10px;
+      width: 500px;
+      overflow-y: scroll;
+      height: calc(90vh);
+  }
+    
+.bottom_screendemo{
+    bottom: 40px;
+    right: 0;
+    position: absolute;
+    text-align: right;
+    padding: 2px 0;
+  }
+    
+</style>
   <script>
 
 //https://developers.arcgis.com/javascript/latest/sample-code/sketch-geometries/index.html
@@ -939,7 +963,6 @@
                    return item.map(Number);
                  });
                  m_lpdata_con.push({'hour':t_hour,'data':t_data});
-                 document.getElementById("infocontent").innerHTML="LPM Data (Loaded)";
                  ExtractRingFromData();
               }
             });
@@ -3115,7 +3138,6 @@
          }
 
          function UpdateSetup_HTML(){
-           document.getElementById("infocontent").value = "LPM Data";
            document.getElementById("searchResults").innerHTML="Search results: NA";
            document.getElementById("detectedClueRes").innerHTML="You selected: NA";
            document.getElementById("myRangeTrust").value=50;
@@ -3501,6 +3523,17 @@
            }
 
          });
+        
+        document.getElementById('bt_MoreControlDetails').addEventListener('click',function(){
+           //show or hide briefing
+           if(document.getElementById("screen_details").style.display=="none"){
+             document.getElementById("screen_details").style.display="initial";
+           }
+           else{
+             document.getElementById("screen_details").style.display="none";
+           }
+
+         });
 
          document.getElementById('bt_followRec').addEventListener('click',function(){
            if(m_adaptiveMode){
@@ -3530,9 +3563,6 @@
     <div class="InfoDiv">
       <div id="viewDiv2D"></div>
       <div id="questionPerTrial">
-        <p id="infocontent">LPM Data</p>
-
-
         <img id="testImg" src="{% static 'img/UAVClueDemo.png' %}" alt="test" width="300" height="200">
         <p id="searchResults">Search results: NA</p>
         <p>The detected object is:</p>
@@ -3544,17 +3574,14 @@
           <input type="range" min="1" max="100" value="50" id="myRangeTrust">
           <label id="myRangeTrustAmount">50</label>
         </div>
-        <label for="clueConfirm" id="detectedClueRes" style="display:none">You selected: NA</label>
-        <button class="bt_screen" id="clueConfirm">Confirm</button>
-        <button class="bt_screen" id="q_scene">Questionnaire</button>
-        <button class="bt_screen" id="btskip">Next Scenario</button>
+        
 
       </div>
     </div>
     <div class="mapDiv">
       <div id="viewDiv3D"></div>
 
-      <div id="ScenarioDescriptionDiv" class="esri-widget">
+      <div id="ScenarioDescriptionDiv" class="esri-widget"  style="display:none">
           <h2>Briefing</h2>
           <div id="smalldiv">
               <p id="p_discription">A male 77 year old subject who is an avid hiker is hiking up the East Coast with his family. The family decides to camp near Beaver Pond. The next morning at approximately 8:00, the male subject decided to briefly look around the area with plans to be back at the campsite by 9:00. Although he is still active, the subject’s athleticism and pace have declined with age. He did not bring any food or water with him. At approximately 10:00, the subject’s daughter wakes up due to a loud rainstorm and confirms that the subject is no longer with the group. It is confirmed that the subject was last seen by a fisherman at 8:30, approximately 0.25 miles away from the family's campsite.
@@ -3565,54 +3592,95 @@
         <label></label>
         <label id="lb_score"></label>
       </div>
+        
       <div class="bottom_screen">
-
-        <div>
-          <label class="lb_screen">Task Control:</label>
+          <div>
+              <button class="bt_screen" id="bt_LoadGraphicData">Load Data from json file</button>
+              <button class="bt_screen" id="bt_generatetask">Generate Task</button>
+              <button class="bt_screen" id="bt_getheatmap">Heat map</button>              
+              <button class="bt_screen" id="bt_getweightedmap">Weighted map</button>
+              <button class="bt_screen" id="bt_getbasemap">Base map</button>
+          </div>
+          
+          <div>
+            <button class="bt_screen" id="bt_getpath">Get Path</button>
+            <button class="bt_screen" id="bt_showColoredPathByLPM">Colored Path</button>
+            <button class="bt_screen" id="bt_showCone3D">Influence</button>
+              
+            <button class="bt_screen" id="bt_showColoredPathByTerrain">Colored Path (T)</button>
+            <button class="bt_screen" id="bt_showCone3D_T">Influence (T)</button>
+          </div>
+          
+          <div>          
+              <button class="bt_screen" id="bt_updateuavpostion">Search</button>
+              <button class="bt_screen" id="bt_lowerUAVPath">Lower UAV</button>
+              <button class="bt_screen" id="bt_raiseUAVPath">Raise UAV</button>
+              <button class="bt_screen" id="bt_UAVH">High</button>
+              <button class="bt_screen" id="bt_UAVM">Medium</button>
+              <button class="bt_screen" id="bt_UAVL">Low</button>
+            </div>
+          
+      </div>
+        
+        
+        
+      <div class="bottom_screendemo" id="screen_details" style="display:none">        
+        <div>          
           <button class="bt_screen" id="bt_loadLPMData">Load LPM Data</button>
           <button class="bt_screen" id="bt_generatetask">Generate Task</button>
           <button class="bt_screen" id="bt_getLPM">Update Visualization</button>
           <button class="bt_screen" id="bt_getpath">Get Path</button>
+            <label class="lb_screen">Task Control</label>
         </div>
 
-        <div>
-          <label class="lb_screen">Step Show Map:</label>
+        <div>          
           <button class="bt_screen" id="bt_getbasemap">get Base map</button>
           <button class="bt_screen" id="bt_getweightedmap">get Weighted map</button>
           <button class="bt_screen" id="bt_getheatmap">get Heat map</button>
+            <label class="lb_screen">Step Show Map</label>
+        </div>
+          
+          <div>
+          
+          <button class="bt_screen" id="bt_UAVH">Set UAV Path: High</button>
+          <button class="bt_screen" id="bt_UAVM">Set UAV Path: Medium</button>
+          <button class="bt_screen" id="bt_UAVL">Set UAV Path: Low</button>
+            <label class="lb_screen">Path Planning</label>
         </div>
 
         <div>
-          <label class="lb_screen">Step Show influence:</label>
+          
           <button class="bt_screen" id="bt_showCone3D">Influence (H)</button>
           <button class="bt_screen" id="bt_showColoredPathByLPM">Colored Path (H)</button>
 
           <button class="bt_screen" id="bt_showCone3D_T">Influence (T)</button>
           <button class="bt_screen" id="bt_showColoredPathByTerrain">Colored Path (T)</button>
-
+            <label class="lb_screen">Step Show influence</label>
         </div>
 
         <div>
-          <label class="lb_screen">Search Control:</label>
+          
           <button class="bt_screen" id="bt_updateuavpostion">Search</button>
           <button class="bt_screen" id="bt_lowerUAVPath">Lower UAV</button>
           <button class="bt_screen" id="bt_raiseUAVPath">Raise UAV</button>
           <button class="bt_screen" id="bt_sendHumanSearchTeam">Send Human Search Team</button>
+            <label class="lb_screen">Search Control</label>
         </div>
 
         <div>
-          <label class="lb_screen">Path Planning:</label>
+          
           <button class="bt_screen" id="bt_UAVH">Set UAV Path: High</button>
           <button class="bt_screen" id="bt_UAVM">Set UAV Path: Medium</button>
           <button class="bt_screen" id="bt_UAVL">Set UAV Path: Low</button>
+            <label class="lb_screen">Path Planning</label>
         </div>
 
         <div>
-          <label class="lb_screen">Experiment flow setup:</label>
+          
           <button class="bt_screen" id="bt_briefing">Get Briefing</button>
           <button class="bt_screen" id="bt_getcameraposition">Get Camera</button>
           <button class="bt_screen" id="bt_followRec">Follow->T</button>
-
+            <label class="lb_screen">Experiment flow setup</label>
         </div>
       </div>
 
@@ -3641,21 +3709,30 @@
       <h2 class="list-heading">Instructions</h2>
       <button class="bt_screen" id="bt_LogGraphicData">Download Data to json file</button>
       <button class="bt_screen" id="bt_LoadGraphicData">Load Data from json file</button>
+      <button class="bt_screen" id="bt_MoreControlDetails">More controls</button>
     </div>
     <div>
-      <h2 class="list-heading">Experiment 3D (demo)</h2>
+      <h2 class="list-heading">Experiment 3D</h2>
       <button class="edit-button" id="bt_gotoExperiment3D">Experiment Entry</button>
     </div>
+      
+    <div>
+        <h2>Clue Check</h2>
+        <label for="clueConfirm" id="detectedClueRes" style="display:none">You selected: NA</label>
+        <button class="bt_screen" id="clueConfirm">Confirm</button>
+        <button class="bt_screen" id="q_scene">Questionnaire</button>
+        <button class="bt_screen" id="btskip">Next Scenario</button>
+    </div>
+      
 
     <div>
-        <h3>Live video</h3>
+        <h2>Live video</h2>
         <iframe src="" height="240" width=100% title="Iframe Example" id="if_ipcamera"></iframe>
         <p> IP Camera</p>
         <label id="ipcamurl">URL</label><br>
         <button class="bt_screen" id="bt_changeipcamera">Set IP Camera:</button>
         <input type="text" id="ipcamname" name="ipcamname" value="http://192.168.0.19:8889/video_feed"><br>
     </div>
-
   </div>
 
 
