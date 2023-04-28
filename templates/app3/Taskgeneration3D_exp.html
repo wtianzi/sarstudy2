@@ -107,11 +107,11 @@
       var m_exp_discription=m_expsetupobj.scenariodiscription[m_exp_taskSetup.loc];
 
       var m_scoresheet={
-        "score0":[[500]],
+        "score0":[[300]],
         "score1":[[-10,-20,-30]],// m_currentHeight:0:high,1:mid,2:low
     		"score2":[[0,-5,-10,-15,-40]],
     		"score3":[[50,-20,-50],[-50,20,-50],[50,20,200],[50,20,200]],
-    		"score4":[[-100]],
+    		"score4":[[-100]], // send rescue team
         "score5":[[-100]],// miss the potential target
         "score6":[[-60]]
       }
@@ -184,7 +184,6 @@
         "logtype":"task",
         "m_exp_variables":m_exp_variables,
         "m_exp_location":m_exp_location_3D.name,
-        "m_exp_visualization":m_exp_visualization,
         "participantindex":m_exp_participantindex,
         "participantid":m_exp_participantid,
         "experimentindex":m_exp_taskIndex,
@@ -194,7 +193,6 @@
         "duration":0,
         "totalrounds":0,
         "m_trialindex":m_trialindex,
-        "visualization":m_exp_visualization,
         "m_adaptiveMode":m_adaptiveMode,
         "m_heightHistory":[],
         "m_trustHistory":[]
@@ -2939,7 +2937,7 @@
 
              m_experimentlog.taskstatus="end";
              m_experimentlog.taskend=Date.now();
-             m_experimentlog.duration=m_experimentlog.taskstart-m_experimentlog.taskend;
+             m_experimentlog.duration=m_experimentlog.taskend-m_experimentlog.taskstart;
              m_experimentlog.totalrounds=m_trialindex+1;
              m_experimentlog.m_heightHistory=m_heightHistory;
              SaveExperimentdatatoDB(m_experimentlog);
@@ -2977,7 +2975,7 @@
                m_currentClue=m_unfoundClues.pop();
 
                let clueinfo=m_exp_location_3D.clue[m_currentClue[0]];
-               document.getElementById("searchResults").innerHTML="UAV: The object is a "+clueinfo.info+".";
+               document.getElementById("searchResults").innerHTML="UAV: The object is a "+clueinfo.info+", "+clueinfo.relevance+".";
                m_clueOnVertical3DOffset=0;
 
                // one clue is found
@@ -3248,8 +3246,9 @@
            }
            else if(averageTrust-trustIn>rangeTrust){
              // if the average of previous three trust is higher than the current trust, it means that trust is decreased, then use different trend
-             if(m_default_trend==1){
-
+             //m_default_trend=(-1)*m_default_trend;
+            if(m_default_trend==1){
+               
              }
              else{
                m_default_trend=(-1)*m_default_trend;
@@ -3260,7 +3259,7 @@
              // if the average of the previous three trust is at the similar level
              // if trust plateau, then show less
              // else, then show more
-             if(rustIn>100-t_lentrust*5){
+             if(trustIn>100-t_lentrust*5){
                m_default_trend=-1;
              }
              else{
@@ -3402,7 +3401,6 @@
               "logtype":"task",
               "m_exp_variables":m_exp_variables,
               "m_exp_location":m_exp_location_3D.name,
-              "m_exp_visualization":m_exp_visualization,
               "participantindex":m_exp_participantindex,
               "participantid":m_exp_participantid,
               "experimentindex":m_exp_taskIndex,
@@ -3412,7 +3410,6 @@
               "taskend":0,
               "duration":0,
               "totalrounds":0,
-              "visualization":m_exp_visualization,
               "m_adaptiveMode":m_adaptiveMode,
               "m_heightHistory":[],
               "m_trustHistory":[]
@@ -3438,8 +3435,8 @@
            //document.getElementById("infocontent").value = "LPM Data";
            document.getElementById("searchResults").innerHTML="Search results: NA";
            document.getElementById("bt_starttosearch").innerHTML="Search";
-           document.getElementById("myRangeTrust").value=50;
-           document.getElementById("myRangeTrustAmount").innerHTML=50;
+           document.getElementById("myRangeTrust").value=0;
+           document.getElementById("myRangeTrustAmount").innerHTML=0;
 
            document.getElementById("p_discription").innerHTML=m_exp_discription.discription;
            document.getElementById("btic").value=m_exp_location_3D.name;
@@ -3458,6 +3455,11 @@
            document.getElementById("bt_UAVH").disabled = true;
            document.getElementById("bt_UAVM").disabled = true;
            document.getElementById("bt_UAVL").disabled = true;
+             
+           document.getElementById("bt_UAVH").innerHTML="&#8657; High (current)";
+           document.getElementById("bt_UAVM").innerHTML="&#8660; Medium";
+           document.getElementById("bt_UAVL").innerHTML="&#8659; Low";
+             
            document.getElementById("bt_UAVRecommend").disabled = true;
 
            document.getElementById("Results").style.display="none";
@@ -3560,6 +3562,9 @@
 
          $('#myRangeTrust').on('change', function() {
               document.getElementById("myRangeTrustAmount").innerHTML =  document.getElementById("myRangeTrust").value;
+              //m_exp_e.id="myRangeTrust";
+              //m_exp_e.notes=document.getElementById("myRangeTrust").value.toString();
+              //SaveExperimentdatatoDB(m_exp_e);
           });
 
           // search start
@@ -3610,7 +3615,7 @@
          });
          document.getElementById("bt_lowerUAVPath").addEventListener("click",function(){
            lowerUAVPath3D();
-           UpdateScore("score2",0,0);
+           UpdateScore("score2",0,1);
 
            m_exp_e.id="bt_lowerUAVPath";
            m_exp_e.notes={"height": m_currentHeight};
@@ -3619,7 +3624,7 @@
          document.getElementById("bt_sendHumanSearchTeam").addEventListener("click",function(){
            let clueinfo=m_exp_location_3D.clue[m_currentClue[0]];
            document.getElementById("searchResults").innerHTML="Human search team: The object is a "+clueinfo.truth+".";
-           UpdateScore("score2",0,3);
+           UpdateScore("score2",0,4);
 
            document.getElementById("bt_raiseUAVPath").disabled=true;
            document.getElementById("bt_lowerUAVPath").disabled=true;
@@ -3801,6 +3806,7 @@
            if(ele[2].checked){
              document.getElementById("searchResults").innerHTML="Human rescue team: The object is a "+clueinfo.truth+".";
              UpdateScore("score4",0,0);
+             UpdateScore("score3",eleIndex,clueinfo.truthIndex);
            }
            else if(-1==eleIndex){
              UpdateScore("score5",0,0);
@@ -3828,6 +3834,7 @@
            document.getElementById("bt_UAVM").disabled = false;
            document.getElementById("bt_UAVL").disabled = false;
            document.getElementById("bt_UAVRecommend").disabled = false;
+           document.getElementById("searchResults").innerHTML="Search results: NA";
 
            //log the data to db
            m_exp_confirm.trust=res_trust;
@@ -3838,7 +3845,7 @@
            if(m_searchFinish){
              m_experimentlog.taskstatus="end";
              m_experimentlog.taskend=Date.now();
-             m_experimentlog.duration=m_experimentlog.taskstart-m_experimentlog.taskend;
+             m_experimentlog.duration=m_experimentlog.taskend-m_experimentlog.taskstart;
              m_experimentlog.totalrounds=m_trialindex+1;
              m_experimentlog.m_heightHistory=m_heightHistory;
              m_experimentlog.m_trustHistory=m_trustHistory;
@@ -3861,12 +3868,12 @@
            m_exp_e.id="bt_Questionnaire";
            SaveExperimentdatatoDB(m_exp_e);
 
-           m_experimentlog.taskstatus="end";
-           m_experimentlog.taskend=Date.now();
-           m_experimentlog.duration=m_experimentlog.taskstart-m_experimentlog.taskend;
-           m_experimentlog.totalrounds=m_trialindex+1;
-           m_experimentlog.m_heightHistory=m_heightHistory;
-           SaveExperimentdatatoDB(m_experimentlog);
+           //m_experimentlog.taskstatus="end";
+           //m_experimentlog.taskend=Date.now();
+           //m_experimentlog.duration=m_experimentlog.taskstart-m_experimentlog.taskend;
+           //m_experimentlog.totalrounds=m_trialindex+1;
+           //m_experimentlog.m_heightHistory=m_heightHistory;
+           //SaveExperimentdatatoDB(m_experimentlog);
 
           //questionnaire
           let participantid={{ participantid |safe }};
@@ -4036,11 +4043,14 @@
            //show or hide briefing
            if(document.getElementById("ScenarioDescriptionDiv").style.display=="none"){
              document.getElementById("ScenarioDescriptionDiv").style.display="initial";
+               m_exp_e.notes={"bt_briefing":"open"};
            }
            else{
              document.getElementById("ScenarioDescriptionDiv").style.display="none";
+               m_exp_e.notes={"bt_briefing":"close"};
            }
-
+             m_exp_e.id="bt_briefing";
+           SaveExperimentdatatoDB(m_exp_e);
          });
 
          document.getElementById('bt_followRec').addEventListener('click',function(){
@@ -4155,7 +4165,7 @@
 
       tour.addStep({
         title: 'Step 1: Please read the information',
-        text: `The information of the mission will be used for the later decision making.`,
+        text: `The information of the mission will be used for the later decision making, such as whether the clue is relevant or not.`,
         attachTo: {
           element: '#ScenarioDescriptionDiv',
           on: 'bottom'
@@ -4166,7 +4176,7 @@
 
       tour.addStep({
         title: 'Step 2: Start the mission',
-        text: `Please click the button to start the mission.`,
+        text: `Every mission start with this.`,
         attachTo: {
           element: '#bt_startMission',
           on: 'bottom'
@@ -4177,7 +4187,7 @@
 
       tour.addStep({
         title: 'Step 3: Task Control',
-        text: `The UAV will start to search after clicking the \`Search\` button, wait for a moment until the UAV finds something.`,
+        text: `By clicking the \`Search\` button, the UAV will start to search. Wait for a moment until the UAV finds something.`,
         attachTo: {
           element: '#d_taskcontrol',
           on: 'bottom'
@@ -4188,7 +4198,7 @@
 
       tour.addStep({
         title: 'Step 4: UAV Control',
-        text: `The UAV will stop at a location where you could change the hight to get more resolution or send human search team for a certain results.`,
+        text: `The UAV will stop at a location and provide you images and information with uncertainty, you might get the wrong answer and bad for your score. You could change the height to get more resolution or send human search team for a certain results, and your answer is always right. Notes: Both reduce the score, sending human cost the most.`,
         attachTo: {
           element: '#d_UAVcontrol',
           on: 'bottom'
@@ -4199,7 +4209,7 @@
 
       tour.addStep({
         title: 'Step 5: Swith Path of UAV',
-        text: `You could switch between the following three heights before the next round of search.`,
+        text: `You could switch between the following three heights before the next round of search. You could choose to lower the default path height before search, so you don't need to lower the UAV every search. Notes: different height will have different score. `,
         attachTo: {
           element: '#d_switchpath',
           on: 'bottom'
@@ -4210,7 +4220,7 @@
 
       tour.addStep({
         title: 'Step 6: 2D map with terrain features',
-        text: `The map shows the terrain features that are considered for the UAV path planning.`,
+        text: `The map shows the terrain features that are considered for the path planning.`,
         attachTo: {
           element: '#viewDiv2D',
           on: 'bottom'
@@ -4220,8 +4230,8 @@
       });
 
       tour.addStep({
-        title: 'Step 7: Make decisionss',
-        text: `You will find useful information based on which you need make the judgement of the object and your trust of the system. Then confirm it.`,
+        title: 'Step 7: Make sure you anwser the questions',
+        text: `Given the images and information, please report provide your trust of the path planning and judgement of the detected object. Note: if you select target, the human rescue team will be sent out automatically. It is different from the human search team.`,
         attachTo: {
           element: '#questionPerTrial',
           on: 'bottom'
@@ -4231,8 +4241,8 @@
       });
 
       tour.addStep({
-        title: 'Instruction completed!',
-        text: `Please start the a mission for practice.`,
+        title: 'Before start',
+        text: `The aim of the visualization is to help with the understanding of the path planning. At the end, we will ask you about your understanding of the path planning and the height recommendation. In general, the path is calculated based on terrain and estimation of the lost person. The higher possibility the lost person could be found, the lower the path is planned, and the default image feeds is more clear in lower places.`,
         buttons: [
           {
             action() {
@@ -4258,21 +4268,21 @@
     <div class="InfoDiv">
       <div id="viewDiv2D"></div>
       <div id="questionPerTrial">
-        <img id="testImg" src="{% static 'img/UAVClueDemo.png' %}" alt="test" width="300" height="200">
-        <p id="searchResults">Search results: NA</p>
+        <img id="testImg" src="{% static 'img/UAVClueDemo.png' %}" alt="test">
+        <p id="searchResults">Search results: NA</p>        
+        <div class="slidecontainer">
+          <p>1. How much do you trust the path planning and height recommendation?</p>
+          <input type="range" min="1" max="100" value="0" id="myRangeTrust">
+          <label id="myRangeTrustAmount">0</label>
+        </div>
         <div>
-          <p>1. The detected object is:</p>
+          <p>2. The detected object is:</p>
           <input type="radio" name="detectedClue" value="Clue">Clue<br>
           <input type="radio" name="detectedClue" value="Distractor">Distractor<br>
           <input type="radio" name="detectedClue" value="Target">Target<br>
           <input type="radio" name="detectedClue" value="TBD">I'm not sure<br>
-        </div>
-
-        <div class="slidecontainer">
-          <p>2. How much do you trust the path recommendation?</p>
-          <input type="range" min="1" max="100" value="50" id="myRangeTrust">
-          <label id="myRangeTrustAmount">50</label>
-        </div>
+        </div>       
+          
         <button class="bt_screen" id="clueConfirm" disabled>Confirm</button>
 
       </div>
@@ -4308,6 +4318,7 @@
         <div class="item4"><label class="lb_screen">Set Path Height</label></div>
 
         <div id="d_taskcontrol">
+            
         <div>
         	<button class="bt_screen" id="bt_starttosearch">Search</button>
         </div>
@@ -4322,7 +4333,7 @@
             	<button class="bt_screen_b" id="bt_lowerUAVPath">&#8681; Lower UAV</button>
             </div>
             <div>
-            	<button class="bt_screen_b" id="bt_sendHumanSearchTeam">&#128064; Send Human</button>
+            	<button class="bt_screen_b" id="bt_sendHumanSearchTeam">&#128064; Human Search</button>
             </div>
         </div>
 
@@ -4337,6 +4348,7 @@
           	<button class="bt_screen_b" id="bt_UAVL">&#8659; Low</button>
           </div>
         </div>
+          
       </div>
 
       <div id="s_recenter">

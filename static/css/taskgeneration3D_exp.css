@@ -9,7 +9,7 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 45%;
+    height: 35%;
   }
   #lb_score{
     color: #005e95;
@@ -43,6 +43,7 @@
   #bt_startMission{
     width:200px;
     height: 80px;
+    float: right;
   }
   .bt_screen_b{
     background: white;
@@ -107,6 +108,9 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+    height: 200px;
+    width: auto;
+    max-width: 100%;
   }
   .btnx {
     border: none;
